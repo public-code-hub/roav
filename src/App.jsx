@@ -61,7 +61,7 @@ export default function App() {
   const [doorwayLength, setDoorwayLength] = useState(0);
   const [totalSquareFeet, setTotalSquareFeet] = useState(0);
   //const [scale, setScale] = useState(1);
-console.log('w', width, 'h', height)
+
   const tileSizes = {
     GridMaxPro: { m2: 0.16, ft2: 1.722 },
     PlayFlex: { m2: 0.093025, ft2: 1.0013 }
@@ -305,7 +305,7 @@ console.log('w', width, 'h', height)
 
   const tilesXFull = Math.max(1, Math.ceil(tilesXExact));
   const tilesYFull = Math.max(1, Math.ceil(tilesYExact));
-console.log('tilesXFull', tilesXFull, 'tilesYFull', tilesYFull)
+
   useEffect(() => {
     setTotalSquareFeet(tilesXFull * tilesYFull)
   }, [tilesXFull, tilesYFull]);
