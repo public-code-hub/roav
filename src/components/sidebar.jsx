@@ -51,6 +51,24 @@ const colorPrices = {
   "#D3D3D3": { id: 51096299634961, price: 7.70, edgesId: 51097385337105, cornersId: 51096793022737, edgePrice: 4.50, cornerPrice: 3.49 }  // Light Gray
 };
 
+const colorPricesForUSA = {
+  "#000000": { id: 45309529948291, price: 6.00, edgesId: 45288301854851, cornersId: 45288303067267, edgePrice: 4.50, cornerPrice: 3.49 }, // Black
+  "#FF0000": { id: 45309530996867, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // Red
+  "#808080": { id: 45309531062403, price: 6.00, edgesId: null, cornersId: 45288302444675, edgePrice: 4.50, cornerPrice: 3.49 }, // Gray
+  "#FFFFFF": { id: 45309540434051, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // White
+  "#0000FF": { id: 45309543940227, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // Blue
+  "#90EE90": { id: 45309546168451, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // Light Green
+  "#FFFF00": { id: 45309546725507, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // Yellow
+  "#FFD700": { id: 45309546954883, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // Gold
+  "#ADD8E6": { id: 45309547282563, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // Light Blue
+  "#008000": { id: 45309547872387, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // Green
+  "#800080": { id: 45309548691587, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // Purple
+  "#FFC0CB": { id: 45309548724355, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // Pink
+  "#FFA500": { id: 45309548920963, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49}, // Orange
+  "#40E0D0": { id: 45309549150339, price: 6.00, edgesId: null, cornersId: null, edgePrice: 4.50, cornerPrice: 3.49 }, // Turquoise
+  "#D3D3D3": { id: 45309551706243, price: 6.00, edgesId: 45288299200643, cornersId: 45288302411907, edgePrice: 4.50, cornerPrice: 3.49 }  // Light Gray
+};
+
 const options = [
   { value: "#000000", color: "#000000", label: "Black", src: '/tiles/black2.png' },
   { value: "#808080", color: "#808080", label: "Gray", src: '/tiles/grey.png' },
@@ -102,6 +120,9 @@ const SideBar = (
     customTotalArea,
     customNeededTiles,
   }) => {
+  const query = new URLSearchParams(window.location.search);
+  const source = query.get('source');
+
   const [selectedEdgesColor, setSelectedEdgesColor] = React.useState("please add edges color");
   const [selectedCornersColor, setSelectedCornersColor] = React.useState("please add corners color");
 
@@ -163,7 +184,7 @@ const SideBar = (
   });
 
   const combinedArray = [...options, ...imgArr];
-  const allColors = [...new Set([...Object.keys(colorPrices), ...Object.keys(tileAssets)])];
+  const allColors = [...new Set([...Object.keys(source === 'us' ? colorPricesForUSA : colorPrices), ...Object.keys(tileAssets)])];
 
   const generatePDF = () => {
     const doc = new jsPDF();
@@ -183,7 +204,7 @@ const SideBar = (
 
     allColors.forEach((color) => {
       const count = tiles.filter((t) => t === color).length;
-      const price = colorPrices[color]?.price || 30;
+      const price = source === 'us' ? colorPricesForUSA[color]?.price : colorPrices[color]?.price || 30;
       if (count > 0) {
         const total = count * price;
         tilesTotalPrice += total;
@@ -207,7 +228,7 @@ const SideBar = (
     let edgesCornersTotalPrice = 0;
 
     if (selectedEdgesColor && edges > 0) {
-      const edgePrice = colorPrices[selectedEdgesColor]?.edgePrice || 0;
+      const edgePrice = source === 'us' ? colorPricesForUSA[selectedEdgesColor]?.edgePrice : colorPrices[selectedEdgesColor]?.edgePrice || 0;
       const edgeTotal = edges * edgePrice;
       edgesCornersTotalPrice += edgeTotal;
 
@@ -221,7 +242,7 @@ const SideBar = (
     }
 
     if (selectedCornersColor && corners > 0) {
-      const cornerPrice = colorPrices[selectedCornersColor]?.cornerPrice || 0;
+      const cornerPrice = source === 'us' ? colorPricesForUSA[selectedCornersColor]?.cornerPrice : colorPrices[selectedCornersColor]?.cornerPrice || 0;
       const cornerTotal = corners * cornerPrice;
       edgesCornersTotalPrice += cornerTotal;
 
@@ -287,21 +308,21 @@ const SideBar = (
 
     allColors.forEach(color => {
       const count = tiles.filter(t => t === color).length;
-      const price = colorPrices[color]?.price || 30;
+      const price = source === 'us' ? colorPricesForUSA[color]?.price : colorPrices[color]?.price || 30;
       if (price && count > 0) {
         total += count * price;
       }
     });
 
     if (selectedEdgesColor && edges > 0) {
-      const edgePrice = colorPrices[selectedEdgesColor]?.edgePrice;
+      const edgePrice = source === 'us' ? colorPricesForUSA[selectedEdgesColor]?.edgePrice : colorPrices[selectedEdgesColor]?.edgePrice;
       if (edgePrice) {
         total += edges * edgePrice;
       }
     }
 
     if (selectedCornersColor && corners > 0) {
-      const cornerPrice = colorPrices[selectedCornersColor]?.cornerPrice;
+      const cornerPrice = source === 'us' ? colorPricesForUSA[selectedEdgesColor]?.cornerPrice : colorPrices[selectedCornersColor]?.cornerPrice;
       if (cornerPrice) {
         total += corners * cornerPrice;
       }
@@ -317,27 +338,27 @@ const SideBar = (
     (corners > 0 && selectedCornersColor === 'please add corners color')
 
   const generateDynamicUrl = () => {
-    const baseUrl = 'https://shopmodulux.com/cart/';
+    const baseUrl = source === 'us' ? 'https://moduluxusa.com/cart/' : 'https://shopmodulux.com/cart/';
     const tileParams = allColors
       .map(color => {
         const count = tiles.filter(t => t === color).length;
         if (count === 0) return null;
 
-        const id = colorPrices[color]?.id ?? 51415320396049;
+        const id = source === 'us' ? colorPricesForUSA[color]?.id : colorPrices[color]?.id ?? 51415320396049;
         return `${id}:${count}`;
       })
       .filter(Boolean);
 
     const edgeParam = (() => {
       if (!selectedEdgesColor || edges <= 0) return null;
-      const edgeId = colorPrices[selectedEdgesColor]?.edgesId;
+      const edgeId = source === 'us' ? colorPricesForUSA[selectedEdgesColor]?.edgesId : colorPrices[selectedEdgesColor]?.edgesId;
       if (!edgeId) return null;
       return `${edgeId}:${edges}`;
     })();
 
     const cornerParam = (() => {
       if (!selectedCornersColor || corners <= 0) return null;
-      const cornerId = colorPrices[selectedCornersColor]?.cornersId;
+      const cornerId = source === 'us' ? colorPricesForUSA[selectedCornersColor]?.cornersId : colorPrices[selectedCornersColor]?.cornersId;
       if (!cornerId) return null;
       return `${cornerId}:${corners}`;
     })();
@@ -594,8 +615,8 @@ const SideBar = (
                     //if(!colorPrices[color]?.price) return;
 
                     const count = tiles.filter(t => t === color).length;
-                    const price = colorPrices[color]?.price || 30;
-                    const id = colorPrices[color]?.id || 30;
+                    const price = source === 'us' ? colorPricesForUSA[color]?.price : colorPrices[color]?.price || 30;
+                    const id = source === 'us' ? colorPricesForUSA[color]?.id : colorPrices[color]?.id || 30;
 
                     return count > 0 ? (
                       <tr key={color} id={id}>
@@ -632,7 +653,7 @@ const SideBar = (
                         <td><Text>{price}$</Text></td>
                         <td><Text>{count}</Text></td>
                         <td style={{ textAlign: 'left' }}>
-                          <b>{(count * price).toFixed(0)}$</b>
+                          <b>{(count * price).toFixed(1)}$</b>
                         </td>
                       </tr>
                     ) : null;
@@ -647,12 +668,17 @@ const SideBar = (
               {
                 allColors.some(color => tiles.includes(color)) && (
                   allColors.map((color) => {
-                    if(!colorPrices[color]?.edgesId) return;
+                    if(!colorPrices[color]?.edgesId || !colorPricesForUSA[color]?.edgesId) return;
 
                     const isEdgeColor = color === selectedEdgesColor;
 
-                    const edgeId = isEdgeColor ? colorPrices[color]?.edgesId : null;
-                    const edgePrice = isEdgeColor ? colorPrices[color]?.edgePrice : null;
+                    const edgeId = isEdgeColor
+                      ? (source === 'us' ? colorPricesForUSA[color]?.edgesId : colorPrices[color]?.edgesId)
+                      : null;
+
+                    const edgePrice = isEdgeColor
+                      ? (source === 'us' ? colorPricesForUSA[color]?.edgePrice : colorPrices[color]?.edgePrice)
+                      : null;
 
                     return edges > 0 && isEdgeColor ? (
                       <tr key={color} id={edgeId}>
@@ -674,7 +700,7 @@ const SideBar = (
                         <td><Text>{edgePrice}$</Text></td>
                         <td><Text>{edges}</Text></td>
                         <td style={{ textAlign: 'left' }}>
-                          <b>{(edges * edgePrice).toFixed(0)}$</b>
+                          <b>{(edges * edgePrice).toFixed(1)}$</b>
                         </td>
                       </tr>
                     ) : null;
@@ -685,12 +711,18 @@ const SideBar = (
               {
                 allColors.some(color => tiles.includes(color)) && (
                   allColors.map((color) => {
-                    if(!colorPrices[color]?.cornersId) return;
+                    if(!colorPrices[color]?.cornersId || !colorPricesForUSA[color]?.cornersId) return;
 
                     const isEdgeColor = color === selectedCornersColor;
 
-                    const edgeId = isEdgeColor ? colorPrices[color]?.cornersId : null;
-                    const edgePrice = isEdgeColor ? colorPrices[color]?.cornerPrice : null;
+
+                    const edgeId = isEdgeColor
+                      ? (source === 'us' ? colorPricesForUSA[color]?.cornersId : colorPrices[color]?.cornersId)
+                      : null;
+
+                    const edgePrice = isEdgeColor
+                      ? (source === 'us' ? colorPricesForUSA[color]?.cornerPrice : colorPrices[color]?.cornerPrice)
+                      : null;
 
                     return corners > 0 && isEdgeColor ? (
                       <tr key={color} id={edgeId}>
@@ -712,7 +744,7 @@ const SideBar = (
                         <td><Text>{edgePrice}$</Text></td>
                         <td><Text>{corners}</Text></td>
                         <td style={{ textAlign: 'left' }}>
-                          <b>{(corners * edgePrice).toFixed(0)}$</b>
+                          <b>{(corners * edgePrice).toFixed(1)}$</b>
                         </td>
                       </tr>
                     ) : null;
